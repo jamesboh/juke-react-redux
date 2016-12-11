@@ -32876,13 +32876,13 @@
 	  value: true
 	});
 	
-	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _react = __webpack_require__(1);
 	
 	var _react2 = _interopRequireDefault(_react);
+	
+	var _reactRedux = __webpack_require__(233);
 	
 	var _audio = __webpack_require__(284);
 	
@@ -32906,68 +32906,59 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var _class = function (_Component) {
-	  _inherits(_class, _Component);
+	var mapStateToProps = function mapStateToProps(state, ownProps) {
+	  return {
+	    player: state.player,
+	    currentsSong: state.player.currentSong,
+	    isPlaying: state.player.isPlaying,
+	    progress: state.player.progress
+	  };
+	};
 	
-	  function _class() {
-	    _classCallCheck(this, _class);
+	var mapDispatchToProps = function mapDispatchToProps(dispatch, ownProps) {
+	  return {
+	    next: function next() {
+	      dispatch((0, _player.next)());
+	    },
+	    prev: function prev() {
+	      dispatch((0, _player.previous)());
+	    },
+	    toggle: function toggle(song, list) {
+	      dispatch((0, _player.toggleSong)(song, list));
+	    }
+	  };
+	};
 	
-	    var _this = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this));
+	var PlayerWrapper = function (_Component) {
+	  _inherits(PlayerWrapper, _Component);
 	
-	    _this.state = _store2.default.getState().player;
-	    _this.toggle = _this.toggle.bind(_this);
-	    return _this;
+	  function PlayerWrapper() {
+	    _classCallCheck(this, PlayerWrapper);
+	
+	    return _possibleConstructorReturn(this, (PlayerWrapper.__proto__ || Object.getPrototypeOf(PlayerWrapper)).apply(this, arguments));
 	  }
 	
-	  _createClass(_class, [{
+	  _createClass(PlayerWrapper, [{
 	    key: 'componentDidMount',
 	    value: function componentDidMount() {
 	      var _this2 = this;
 	
-	      _audio2.default.addEventListener('ended', this.next);
+	      _audio2.default.addEventListener('ended', this.props.next);
 	      _audio2.default.addEventListener('timeupdate', function () {
-	        _store2.default.dispatch((0, _player.setProgress)(_audio2.default.currentTime / _audio2.default.duration));
+	        _this2.props.setProgress(_audio2.default.currentTime / _audio2.default.duration);
 	      });
-	
-	      this.unsubscribe = _store2.default.subscribe(function () {
-	        _this2.setState(_store2.default.getState().player);
-	      });
-	    }
-	  }, {
-	    key: 'componentWillUnmount',
-	    value: function componentWillUnmount() {
-	      this.unsubscribe();
-	    }
-	  }, {
-	    key: 'next',
-	    value: function next() {
-	      _store2.default.dispatch((0, _player.next)());
-	    }
-	  }, {
-	    key: 'prev',
-	    value: function prev() {
-	      _store2.default.dispatch((0, _player.previous)());
-	    }
-	  }, {
-	    key: 'toggle',
-	    value: function toggle() {
-	      _store2.default.dispatch((0, _player.toggleSong)(this.state.currentSong, this.state.currentSongList));
 	    }
 	  }, {
 	    key: 'render',
 	    value: function render() {
-	      return _react2.default.createElement(_Player2.default, _extends({}, this.state, {
-	        next: this.next,
-	        prev: this.prev,
-	        toggle: this.toggle
-	      }));
+	      return _react2.default.createElement(_Player2.default, this.props);
 	    }
 	  }]);
-
-	  return _class;
+	
+	  return PlayerWrapper;
 	}(_react.Component);
-
-	exports.default = _class;
+	
+	exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(PlayerWrapper);
 
 /***/ },
 /* 331 */
